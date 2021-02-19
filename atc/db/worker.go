@@ -297,7 +297,6 @@ func (worker *worker) CreateContainer(owner ContainerOwner, meta ContainerMetada
 	if err != nil {
 		return nil, err
 	}
-
 	var containerID int
 	cols := []interface{}{&containerID}
 
@@ -313,7 +312,7 @@ func (worker *worker) CreateContainer(owner ContainerOwner, meta ContainerMetada
 
 	insMap := meta.SQLMap()
 	insMap["worker_name"] = worker.name
-	insMap["handle"] = handle.String()
+	insMap["handle"] = handle
 
 	ownerCols, err := owner.Create(tx, worker.name)
 	if err != nil {
@@ -345,7 +344,8 @@ func (worker *worker) CreateContainer(owner ContainerOwner, meta ContainerMetada
 
 	return newCreatingContainer(
 		containerID,
-		handle.String(),
+		// Allow overwriting the random handle via the ContainerOwner
+		insMap["handle"].(string),
 		worker.name,
 		*metadata,
 		worker.conn,

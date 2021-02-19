@@ -334,6 +334,7 @@ var _ = Describe("Worker", func() {
 					})
 				})
 			})
+
 		})
 
 		Context("when there is no container", func() {
@@ -387,6 +388,26 @@ var _ = Describe("Worker", func() {
 					Expect(teamID.Valid).To(BeTrue())
 				})
 			})
+		})
+	})
+
+	Describe("Find/CreateContainer, fixed handle", func() {
+		It("uses the specified handle for the container", func() {
+			owner := NewFixedHandleContainerOwner("my-handle")
+			creating, err := defaultWorker.CreateContainer(owner, ContainerMetadata{})
+			Expect(err).ToNot(HaveOccurred())
+			Expect(creating.Handle()).To(Equal("my-handle"))
+
+			foundCreating, _, err := defaultWorker.FindContainer(owner)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(foundCreating).To(Equal(creating))
+
+			created, err := creating.Created()
+			Expect(err).ToNot(HaveOccurred())
+
+			_, foundCreated, err := defaultWorker.FindContainer(owner)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(foundCreated).To(Equal(created))
 		})
 	})
 
