@@ -203,6 +203,8 @@ type Volume interface {
 	Handle() string
 	StreamIn(ctx context.Context, path string, compression compression.Compression, reader io.Reader) error
 	StreamOut(ctx context.Context, path string, compression compression.Compression) (io.ReadCloser, error)
+
+	DBVolume() db.CreatedVolume
 }
 
 type P2PVolume interface {
